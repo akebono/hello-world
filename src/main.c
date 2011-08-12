@@ -26,13 +26,15 @@ int main(int argc, char *argv[])
 {
 	GtkWidget *window, *label;
 	buffer=malloc(64);
+	buffer[0]=0x30;
+	buffer[1]=0;
 	gtk_init(&argc,&argv);
 	window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_default_size(GTK_WINDOW(window),100,100);
 	gtk_window_set_title(GTK_WINDOW(window),"timer");
 	g_signal_connect(window,"destroy",G_CALLBACK(destroy),0);
 	label=gtk_label_new(0);
-	g_signal_connect(label,"expose-event",G_CALLBACK(expose_event),0);
+	g_signal_connect(label,"expose-event",G_CALLBACK(expose_event),0); //this called immideatly with buffer filling
 	g_timeout_add(1000,(GSourceFunc)timer_handle,(gpointer)window);
 	gtk_container_add(GTK_CONTAINER(window),label);
 	gtk_widget_show_all(window);
