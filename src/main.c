@@ -28,7 +28,6 @@ void button_handle(GtkWidget *widget, gpointer data)
 {
 	alsa_thing();
 	printf("button clicked\n");
-	return FALSE;
 }
 
 int main(int argc, char *argv[])
