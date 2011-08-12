@@ -22,9 +22,15 @@ static gboolean timer_handle(GtkWidget *widget)
 	return TRUE;
 }
 
+void button_handle(GtkWidget *widget, gpointer data)
+{
+	printf("button clicked\n");
+	return FALSE;
+}
+
 int main(int argc, char *argv[])
 {
-	GtkWidget *window, *label;
+	GtkWidget *window, *label, *button, *fixed;
 	buffer=malloc(64);
 	sprintf(buffer,"-");
 	gtk_init(&argc,&argv);
@@ -33,9 +39,16 @@ int main(int argc, char *argv[])
 	gtk_window_set_title(GTK_WINDOW(window),"timer");
 	g_signal_connect(window,"destroy",G_CALLBACK(destroy),0);
 	label=gtk_label_new(0);
+	fixed=gtk_fixed_new();
+	button=gtk_button_new_with_label("start");
+	
 	g_signal_connect(label,"expose-event",G_CALLBACK(expose_event),0); //this called immideatly with buffer filling
 	g_timeout_add(1000,(GSourceFunc)timer_handle,(gpointer)window);
-	gtk_container_add(GTK_CONTAINER(window),label);
+	g_signal_connect(button,"clicked",G_CALLBACK(button_handle),0); //this called immideatly with buffer filling
+
+	gtk_fixed_put(GTK_FIXED(fixed),button,20,70);
+	gtk_fixed_put(GTK_FIXED(fixed),label,20,20);
+	gtk_container_add(GTK_CONTAINER(window),fixed);
 	gtk_widget_show_all(window);
 	gtk_main();
 	timer_handle(window);
