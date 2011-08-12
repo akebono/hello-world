@@ -2,6 +2,8 @@
 #include <gtk/gtk.h>
 #include <malloc.h>
 
+#include "alsa.c"
+
 unsigned int elaptime=0;
 unsigned char *buffer;
 static void destroy(GtkWidget *widget, gpointer data)
@@ -24,6 +26,7 @@ static gboolean timer_handle(GtkWidget *widget)
 
 void button_handle(GtkWidget *widget, gpointer data)
 {
+	alsa_thing();
 	printf("button clicked\n");
 	return FALSE;
 }
