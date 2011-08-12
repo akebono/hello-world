@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <gtk/gtk.h>
 #include <malloc.h>
+#include <sys/socket.h>
 
 #include "alsa.c"
 
@@ -32,25 +33,38 @@ void button_handle(GtkWidget *widget, gpointer data)
 
 void button1_handle(GtkWidget *widget, gpointer data)
 {
-	int s,i;
+	int s,s1,i;
 	struct sockaddr sa;
-
+	unsigned char *buf;
+	buf=malloc(1500);
 	s=socket(2,1,6);
 	sa.sa_family=2;
 	sa.sa_data[0]=0x10;
-	sa.sa_data[0]=0x20;
-	sa.sa_data[0]=127;
-	sa.sa_data[0]=0;
-	sa.sa_data[0]=0;
-	sa.sa_data[0]=1;
-	if(bind(s,&sa,16))
+	sa.sa_data[1]=0x20;
+	sa.sa_data[2]=127;
+	sa.sa_data[3]=0;
+	sa.sa_data[4]=0;
+	sa.sa_data[5]=1;
+	if(bind(s,&sa,16)){
 		if(errno==98){
+			printf("bind failed: addr in use\n");
 			i=1;
-			setsockopt(s,SOL_SOCKET,SO_REUSE_ADDR,&i,1)
+			setsockopt(s,SOL_SOCKET,SO_REUSEADDR,&i,1);
+		}else{
+			printf("bind failed: %i\n",errno);
 		}
-		
-
-	return FALSE;
+	}
+	printf("bind ok\n");
+	listen(s,2);
+	printf("listentnig...\n");
+	s1=accept(s,&sa,&i);
+	printf("connection accepted\n",s1);
+	while(recv(s1,buf,1500,0)>0){
+		printf("recved something\n");
+	}
+	free(buf);
+	close(s1);
+	close(s);
 }
 
 int main(int argc, char *argv[])
@@ -66,14 +80,15 @@ int main(int argc, char *argv[])
 	label=gtk_label_new(0);
 	fixed=gtk_fixed_new();
 	button=gtk_button_new_with_label("alsa");
-	button=gtk_button_new_with_label("socket");
+	button1=gtk_button_new_with_label("socket");
 	
 	g_signal_connect(label,"expose-event",G_CALLBACK(expose_event),0); //this called immideatly with buffer filling
 	g_timeout_add(1000,(GSourceFunc)timer_handle,(gpointer)window);
 	g_signal_connect(button,"clicked",G_CALLBACK(button_handle),0);
-	g_signal_connect(button,"clicked",G_CALLBACK(button1_handle),0);
+	g_signal_connect(button1,"clicked",G_CALLBACK(button1_handle),0);
 
-	gtk_fixed_put(GTK_FIXED(fixed),button,20,70);
+	gtk_fixed_put(GTK_FIXED(fixed),button,20,50);
+	gtk_fixed_put(GTK_FIXED(fixed),button1,20,70);
 	gtk_fixed_put(GTK_FIXED(fixed),label,20,20);
 	gtk_container_add(GTK_CONTAINER(window),fixed);
 	gtk_widget_show_all(window);
