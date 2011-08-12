@@ -26,8 +26,7 @@ int main(int argc, char *argv[])
 {
 	GtkWidget *window, *label;
 	buffer=malloc(64);
-	buffer[0]=0x30;
-	buffer[1]=0;
+	sprintf(buffer,"-");
 	gtk_init(&argc,&argv);
 	window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_default_size(GTK_WINDOW(window),100,100);
