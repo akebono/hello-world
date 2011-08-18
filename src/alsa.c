@@ -6,7 +6,7 @@ int alsa_thing()
 	int i;
 	FILE * f;
 	int err;
-	unsigned short buf[128];
+	unsigned char buf[128];
 	snd_pcm_t *capture_handle;
 	snd_pcm_hw_params_t *hw_params;
 

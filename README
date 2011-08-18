@@ -1,1 +1,3 @@
 simple counting frame written in gtk
+
+and some sound recorded from hw:0,0 by pressing button alsa

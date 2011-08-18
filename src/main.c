@@ -40,7 +40,7 @@ void button1_handle(GtkWidget *widget, gpointer data)
 	s=socket(2,1,6);
 	sa.sa_family=2;
 	sa.sa_data[0]=0x10;
-	sa.sa_data[1]=0x20;
+	sa.sa_data[1]=0x20; //0x1020=4128
 	sa.sa_data[2]=127;
 	sa.sa_data[3]=0;
 	sa.sa_data[4]=0;
@@ -54,13 +54,14 @@ void button1_handle(GtkWidget *widget, gpointer data)
 			printf("bind failed: %i\n",errno);
 		}
 	}
-	printf("bind ok\n");
 	listen(s,2);
-	printf("listentnig...\n");
-	s1=accept(s,&sa,&i);
-	printf("connection accepted\n",s1);
-	while(recv(s1,buf,1500,0)>0){
-		printf("recved something\n");
+	printf("listening...\n");
+	if(fork()){
+		s1=accept(s,&sa,&i);
+		printf("connection accepted\n",s1);
+		while((i=recv(s1,buf,1500,0))>0){
+			printf("recved %i bytes\n",i);
+		}
 	}
 	free(buf);
 	close(s1);
