@@ -44,7 +44,6 @@ void button1_handle(GtkWidget *widget, gpointer data)
 {
 
 	pthread_mutex_init(mutex,0);
-	sem_unlink("/hello-world_semaphore");
 	childpid=mmap(0,sizeof(int),PROT_READ|PROT_WRITE,MAP_SHARED|MAP_ANON,-1,0);
 	
 	if(fork()){
