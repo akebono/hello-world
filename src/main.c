@@ -2,13 +2,22 @@
 #include <gtk/gtk.h>
 #include <malloc.h>
 #include <sys/socket.h>
-
+#include <sys/mman.h>
+#include <pthread.h>
 #include "alsa.c"
 
 unsigned int elaptime=0;
 unsigned char *buffer;
+
+int *childpid;
+pthread_mutex_t *mutex;
+
 static void destroy(GtkWidget *widget, gpointer data)
 {
+	pthread_mutex_lock(mutex);
+	kill(*childpid,9);
+	pthread_mutex_unlock(mutex);
+	pthread_mutex_destroy(mutex);
 	gtk_main_quit();
 }
 static gboolean expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data)
@@ -33,39 +42,49 @@ void button_handle(GtkWidget *widget, gpointer data)
 
 void button1_handle(GtkWidget *widget, gpointer data)
 {
-	int s,s1,i;
-	struct sockaddr sa;
-	unsigned char *buf;
-	buf=malloc(1500);
-	s=socket(2,1,6);
-	sa.sa_family=2;
-	sa.sa_data[0]=0x10;
-	sa.sa_data[1]=0x20; //0x1020=4128
-	sa.sa_data[2]=127;
-	sa.sa_data[3]=0;
-	sa.sa_data[4]=0;
-	sa.sa_data[5]=1;
-	if(bind(s,&sa,16)){
-		if(errno==98){
-			printf("bind failed: addr in use\n");
-			i=1;
-			setsockopt(s,SOL_SOCKET,SO_REUSEADDR,&i,1);
-		}else{
-			printf("bind failed: %i\n",errno);
-		}
-	}
-	listen(s,2);
-	printf("listening...\n");
+
+	pthread_mutex_init(mutex,0);
+	sem_unlink("/hello-world_semaphore");
+	childpid=mmap(0,sizeof(int),PROT_READ|PROT_WRITE,MAP_SHARED|MAP_ANON,-1,0);
+	
 	if(fork()){
+		pthread_mutex_lock(mutex);
+		*childpid=getpid();
+		pthread_mutex_unlock(mutex);
+		int s,s1,i;
+		struct sockaddr sa;
+		unsigned char *buf;
+	
+		s=socket(2,1,6);
+		sa.sa_family=2;
+		sa.sa_data[0]=0x10;
+		sa.sa_data[1]=0x20; //0x1020=4128
+		sa.sa_data[2]=127;
+		sa.sa_data[3]=0;
+		sa.sa_data[4]=0;
+		sa.sa_data[5]=1;
+		if(bind(s,&sa,16)){
+			if(errno==98){
+				printf("bind failed: addr in use\n");
+				i=1;
+				setsockopt(s,SOL_SOCKET,SO_REUSEADDR,&i,1);
+			}else{
+				printf("bind failed: %i\n",errno);
+			}
+		}
+		listen(s,2);
+		printf("listening...\n");
+		buf=malloc(1500);
+		
 		s1=accept(s,&sa,&i);
 		printf("connection accepted\n",s1);
 		while((i=recv(s1,buf,1500,0))>0){
 			printf("recved %i bytes\n",i);
 		}
+		free(buf);
+		close(s1);
+		close(s);
 	}
-	free(buf);
-	close(s1);
-	close(s);
 }
 
 int main(int argc, char *argv[])
@@ -88,7 +107,7 @@ int main(int argc, char *argv[])
 	g_signal_connect(button,"clicked",G_CALLBACK(button_handle),0);
 	g_signal_connect(button1,"clicked",G_CALLBACK(button1_handle),0);
 
-	gtk_fixed_put(GTK_FIXED(fixed),button,20,50);
+	gtk_fixed_put(GTK_FIXED(fixed),button,20,45);
 	gtk_fixed_put(GTK_FIXED(fixed),button1,20,70);
 	gtk_fixed_put(GTK_FIXED(fixed),label,20,20);
 	gtk_container_add(GTK_CONTAINER(window),fixed);
