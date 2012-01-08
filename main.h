@@ -5,7 +5,7 @@ unsigned int normaltime,tick;
 #define NUM_TRAINS 10
 
 int zone[9],state[NUM_TRAINS],oldstate[NUM_TRAINS];
-float x=0,y=0,train[NUM_TRAINS][2],speedc=0.0001,speed[NUM_TRAINS];
+float x=0,y=0,train[NUM_TRAINS][2],speedc=0.0005,speed[NUM_TRAINS];
 
 float width=800,height=800;
 
@@ -36,7 +36,7 @@ void singals(){
 		if(zone[8]==2)
 			zone[8]=0;
 	}
-
+/*
 	//prohibition
 	if(zone[0]==1 && !zone[1])
 		zone[1]=2;
@@ -76,6 +76,7 @@ void singals(){
 		zone[6]=2;
 	if(zone[8]==1 && !zone[6])
 		zone[6]=2;
+*/
 }
 
 void graph()
@@ -84,8 +85,6 @@ void graph()
 
 	if(zone[0]==1)
 		glColor3ub(255,0,0);
-	else if(zone[0]==2)
-		glColor3ub(255,255,0);
 	else
 		glColor3ub(0,255,0);
 	glVertex2f(-0.9,1);
@@ -96,8 +95,6 @@ void graph()
 	glBegin(1);
 	if(zone[1]==1)
 		glColor3ub(255,0,0);
-	else if(zone[1]==2)
-		glColor3ub(255,255,0);
 	else
 		glColor3ub(0,255,0);
 	glVertex2f(0.6,0.9);
@@ -111,8 +108,6 @@ void graph()
 	glBegin(3);
 	if(zone[2]==1)
 		glColor3ub(255,0,0);
-	else if(zone[2]==2)
-		glColor3ub(255,255,0);
 	else
 		glColor3ub(0,255,0);
 	glVertex2f(0.8,0.9);
@@ -123,8 +118,6 @@ void graph()
 	glBegin(1);
 	if(zone[3]==1)
 		glColor3ub(255,0,0);
-	else if(zone[3]==2)
-		glColor3ub(255,255,0);
 	else
 		glColor3ub(0,255,0);
 	glVertex2f(0.8,-1);
@@ -133,8 +126,6 @@ void graph()
 	glBegin(1);
 	if(zone[4]==1)
 		glColor3ub(255,0,0);
-	else if(zone[4]==2)
-		glColor3ub(255,255,0);
 	else
 		glColor3ub(0,255,0);
 	glVertex2f(0.7,-1);
@@ -143,8 +134,6 @@ void graph()
 	glBegin(1);
 	if(zone[5]==1)
 		glColor3ub(255,0,0);
-	else if(zone[5]==2)
-		glColor3ub(255,255,0);
 	else
 		glColor3ub(0,255,0);
 	glVertex2f(0.6,0.6);
@@ -153,8 +142,6 @@ void graph()
 	glBegin(1);
 	if(zone[6]==1)
 		glColor3ub(255,0,0);
-	else if(zone[6]==2)
-		glColor3ub(255,255,0);
 	else
 		glColor3ub(0,255,0);
 	glVertex2f(0.5,0.5);
@@ -165,8 +152,6 @@ void graph()
 	glBegin(1);
 	if(zone[7]==1)
 		glColor3ub(255,0,0);
-	else if(zone[7]==2)
-		glColor3ub(255,255,0);
 	else
 		glColor3ub(0,255,0);
 	glVertex2f(0.6,-1);
@@ -175,14 +160,64 @@ void graph()
 	glBegin(1);
 	if(zone[8]==1)
 		glColor3ub(255,0,0);
-	else if(zone[8]==2)
-		glColor3ub(255,255,0);
 	else
 		glColor3ub(0,255,0);
 	glVertex2f(0.5,-1);
 	glVertex2f(0.5,0.5);
 	glEnd();
 
+//keep together
+	glColor3ub(255,255,0);
+	if(zone[1]==1){
+		glBegin(1);
+		glVertex2f(0.5,0.89);
+		glVertex2f(0.6,0.89);
+		glEnd();
+	}
+	if(zone[2]==1){
+		glBegin(1);
+		glVertex2f(0.7,0.89);
+		glVertex2f(0.8,0.89);
+		glEnd();
+	}
+	if(zone[3]==1){
+		glBegin(1);
+		glVertex2f(0.7,0.79);
+		glVertex2f(0.79,0.79);
+		glEnd();
+	}
+	if(zone[4]==1){
+		glBegin(1);
+		glVertex2f(0.69,0.8);
+		glVertex2f(0.69,0.7);
+		glEnd();
+	}
+	if(zone[5]==1){
+		glBegin(1);
+		glVertex2f(0.59,0.81);
+		glVertex2f(0.7,0.81);
+		glEnd();
+	}
+	if(zone[6]==1){
+		glBegin(1);
+		glVertex2f(0.59,0.6);
+		glVertex2f(0.59,0.7);
+		glEnd();
+	}
+	if(zone[7]==1){
+		glBegin(1);
+		glVertex2f(0.59,0.4);
+		glVertex2f(0.59,0.5);
+		glEnd();
+	}
+	if(zone[8]==1){
+		glBegin(1);
+		glVertex2f(0.49,0.51);
+		glVertex2f(0.6,0.51);
+		glEnd();
+	}
+
+//
 	glBegin(1);
 	glColor3ub(255,255,255);
 	glVertex2f(0.6,0.9);
@@ -223,7 +258,7 @@ void drawtrain(){
 	}
 	for(i=0;i<NUM_TRAINS;i++){
 //		oldstate[i]=state[i];
-//		if(!state[i]){
+		if(state[i]!=0){
 			glBegin(7);
 			glColor3ub(255,255,255);
 			glVertex2f(train[i][0]-0.005,train[i][1]-0.005);
@@ -231,7 +266,7 @@ void drawtrain(){
 			glVertex2f(train[i][0]+0.005,train[i][1]+0.005);
 			glVertex2f(train[i][0]-0.005,train[i][1]+0.005);
 			glEnd();
-//		}
+		}
 		switch(state[i]){
 		case 1:
 			train[i][0]=-0.9;
@@ -450,99 +485,6 @@ void drawtrain(){
 				state[i]=0;
 			}
 		break;
-//reverse (+1000). still not done protection against deadlocks
-/*
-		case 1001:
-			train[i][0]=-0.9;
-			train[i][1]+=speed[i];
-			if(train[i][1]>=1)
-				state[i]=0;
-		break;
-		case 1002:
-			train[i][1]=0.9;
-			train[i][0]-=speed[i];
-			if(train[i][0]<=-0.9)
-				state[i]=1001;
-		break;
-		case 1003:
-			train[i][0]=0.7;
-			train[i][1]-=speed[i];
-			if(train[i][1]<=0.9)
-				state[i]=7; //varies: 4,7,1002
-		break;
-		case 1004:
-			train[i][1]=0.9;
-			train[i][0]-=speed[i];
-			if(train[i][0]<=0.7)
-				state[i]=7; //varies: 3,1002,7
-		break;
-		case 1005:
-			train[i][0]=0.9;
-			train[i][1]+=speed[i];
-			if(train[i][1]>=0.9)
-				state[i]=1004;
-		break;
-		case 1006:
-			train[i][1]=-0.9;
-			train[i][0]-=speed[i];
-			if(train[i][0]<=0.9)
-				state[i]=1005;
-		break;
-		case 1007:
-			train[i][0]=0.7;
-			train[i][1]+=speed[i];
-			if(train[i][1]>=0.9)
-				state[i]=4; //varies: 1002,3,4
-		break;
-		case 1008:
-			train[i][1]=0.8;
-			train[i][0]+=speed[i];
-			if(train[i][0]>=0.7)
-				state[i]=9; //varies: 1007,9,14
-		break;
-		case 1009:
-			train[i][1]=0.8;
-			train[i][0]-=speed[i];
-			if(train[i][0]<=0.7)
-				state[i]=8; //varies: 1007,8,14
-		break;
-		case 1010:
-			train[i][0]=0.6;
-			train[i][1]+=speed[i];
-			if(train[i][1]>=0.8)
-				state[i]=1008;
-		break;
-		case 1011:
-			train[i][1]=0.5;
-			train[i][0]+=speed[i];
-			if(train[i][0]>=0.6)
-				state[i]=1010; //varies: 1010,13
-		break;
-		case 1012:
-			train[i][0]=0.5;
-			train[i][1]+=speed[i];
-			if(train[i][1]>=0.5)
-				state[i]=1011;
-		break;
-		case 1013:
-			train[i][0]=0.6;
-			train[i][1]+=speed[i];
-			if(train[i][1]>=0.5)
-				state[i]=1010; //varies: 11,1010
-		break;
-		case 1014:
-			train[i][0]=0.7;
-			train[i][1]+=speed[i];
-			if(train[i][1]>=0.8)
-				state[i]=8; //varies: 8,1007,9
-		break;
-		case 1015:
-			train[i][0]=0.8;
-			train[i][1]+=speed[i];
-			if(train[i][1]>=0.8)
-				state[i]=1009;
-		break;
-*/
 		default: //0
 			train[i][0]=-0.9;
 			train[i][1]=1;
