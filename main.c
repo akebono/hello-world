@@ -53,10 +53,10 @@ int main()
 	swa.event_mask=ExposureMask|KeyPressMask|PointerMotionMask;
 	win=XCreateWindow(dpy,root,0,0,width,height,0,vi->depth,InputOutput,vi->visual,CWColormap|CWEventMask,&swa);
 	XMapWindow(dpy,win);
-	sprintf(buf,"%s",glGetString(GL_VENDOR));
-	XStoreName(dpy,win,buf);
 	glc=glXCreateContext(dpy,vi,NULL,GL_TRUE);
 	glXMakeCurrent(dpy,win,glc);
+	sprintf(buf,"%s",glGetString(GL_VENDOR));
+	XStoreName(dpy,win,buf);
 	glEnable(GL_DEPTH_TEST);
 	XGetWindowAttributes(dpy,win,&gwa);
 	glViewport(0,0,gwa.width,gwa.height);
